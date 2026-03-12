@@ -25,41 +25,11 @@ for (let i = 1; i <= size; i++) {
 
 }
 
-</script>
-
-</body>
-</html>
-
-
-
-<!--
-<html>
-<body>
-
-<img id="board" src="board.png">
-
-<script>
-
-let boardSize = 19
-
-document.getElementById("board").onclick = function(event) {
-
-  let rect = this.getBoundingClientRect()
-
-  let x = event.clientX - rect.left
-  let y = event.clientY - rect.top
-
-  let fieldSize = rect.width / boardSize
-
-  let boardX = Math.floor(x / fieldSize)
-  let boardY = Math.floor(y / fieldSize)
-
-  console.log("Feld:", boardX, boardY)
-
-}
+ctx.beginPath()
+ctx.arc(300, 300, 15, 0, Math.PI * 2)
+ctx.fill()
 
 </script>
 
 </body>
 </html>
--->
