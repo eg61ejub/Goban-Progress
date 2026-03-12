@@ -1,5 +1,20 @@
 <html>
 <body>
-<img src="board.png">
+
+<img id="board" src="board.png">
+
+<script>
+document.getElementById("board").onclick = function(event) {
+
+  let rect = this.getBoundingClientRect()
+
+  let x = event.clientX - rect.left
+  let y = event.clientY - rect.top
+
+  console.log("Pixel:", x, y)
+
+}
+</script>
+
 </body>
 </html>
