@@ -1,6 +1,41 @@
 <html>
 <body>
 
+<canvas id="board" width="600" height="600"></canvas>
+
+<script>
+
+let canvas = document.getElementById("board")
+let ctx = canvas.getContext("2d")
+
+let size = 19
+let grid = canvas.width / (size + 1)
+
+for (let i = 1; i <= size; i++) {
+
+  ctx.beginPath()
+  ctx.moveTo(grid, i * grid)
+  ctx.lineTo(size * grid, i * grid)
+  ctx.stroke()
+
+  ctx.beginPath()
+  ctx.moveTo(i * grid, grid)
+  ctx.lineTo(i * grid, size * grid)
+  ctx.stroke()
+
+}
+
+</script>
+
+</body>
+</html>
+
+
+
+<!--
+<html>
+<body>
+
 <img id="board" src="board.png">
 
 <script>
@@ -27,3 +62,4 @@ document.getElementById("board").onclick = function(event) {
 
 </body>
 </html>
+-->
