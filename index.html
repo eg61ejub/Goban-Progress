@@ -29,6 +29,30 @@ ctx.beginPath()
 ctx.arc(300, 300, 15, 0, Math.PI * 2)
 ctx.fill()
 
+
+canvas.onclick = function(event) {
+
+  let rect = canvas.getBoundingClientRect()
+
+  let x = event.clientX - rect.left
+  let y = event.clientY - rect.top
+
+  let boardX = Math.round(x / grid) - 1
+  let boardY = Math.round(y / grid) - 1
+
+  drawStone(boardX, boardY)
+
+}
+
+function drawStone(x, y) {
+
+  let px = (x + 1) * grid
+  let py = (y + 1) * grid
+
+  ctx.beginPath()
+  ctx.arc(px, py, grid * 0.4, 0, Math.PI * 2)
+  ctx.fill()
+  
 </script>
 
 </body>
