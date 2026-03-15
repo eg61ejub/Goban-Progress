@@ -11,6 +11,20 @@ let ctx = canvas.getContext("2d")
 let size = 19
 let grid = canvas.width / (size + 1)
 
+let player = 1   // 1 = schwarz, 2 = weiß
+
+let board = []
+
+for (let y = 0; y < size; y++) {
+
+  board[y] = []
+
+  for (let x = 0; x < size; x++) {
+    board[y][x] = 0
+  }
+
+}
+
 for (let i = 1; i <= size; i++) {
 
   ctx.beginPath()
@@ -40,21 +54,34 @@ canvas.onclick = function(event) {
   let boardX = Math.round(x / grid) - 1
   let boardY = Math.round(y / grid) - 1
 
-  drawStone(boardX, boardY)
+  if (boardX < 0 || boardX >= size) return
+  if (boardY < 0 || boardY >= size) return
+
+  if (board[boardY][boardX] != 0) return
+
+  board[boardY][boardX] = player
+
+  drawStone(boardX, boardY, player)
+
+  player = 3 - player
 
 }
 
-function drawStone(x, y) {
+function drawStone(x, y, player) {
 
   let px = (x + 1) * grid
   let py = (y + 1) * grid
 
   ctx.beginPath()
   ctx.arc(px, py, grid * 0.4, 0, Math.PI * 2)
-  ctx.fill()
-}
-  
-</script>
 
-</body>
-</html>
+  if (player == 1) {
+    ctx.fillStyle = "black"
+  } else {
+    ctx.fillStyle = "white"
+  }
+
+  ctx.fill()
+  ctx.stroke()
+
+}
