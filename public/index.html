@@ -7,24 +7,6 @@
 <body>
 
 <script src="/socket.io/socket.io.js">
-
-  let socket = io()
-  
-  function sendMove() {
-  
-    socket.emit("move", {
-      x: 1,
-      y: 1,
-      player: 1
-    })
-  
-  }
-  
-  socket.on("move", data => {
-  
-    console.log("Move received:", data)
-  
-  })
     
   <canvas id="board" width="600" height="600"></canvas>
   
