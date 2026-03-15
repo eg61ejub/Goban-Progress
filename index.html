@@ -1,19 +1,27 @@
+<!DOCTYPE html>
 <html>
+
+<head>
+<link rel="icon" type="image/png" href="/favicon.png">
+</head>
+
 <body>
 
 <canvas id="board" width="600" height="600"></canvas>
 
+<script src="/socket.io/socket.io.js"></script>
+
 <script>
-  
-// Brett zeichnen
+
+let socket = io()
+
 let canvas = document.getElementById("board")
 let ctx = canvas.getContext("2d")
 
 let size = 19
 let grid = canvas.width / (size + 1)
 
-let player = 1   // 1 = schwarz, 2 = weiß
-
+let player = 1
 let board = []
 
 for (let y = 0; y < size; y++) {
@@ -40,31 +48,21 @@ for (let i = 1; i <= size; i++) {
 
 }
 
-ctx.beginPath()
-ctx.arc(300, 300, 15, 0, Math.PI * 2)
-ctx.fill()
+function drawStone(x, y, player) {
 
-// Hoshipunkte
-function drawHoshi(x, y) {
-
-  let px = x * grid
-  let py = y * grid
+  let px = (x + 1) * grid
+  let py = (y + 1) * grid
 
   ctx.beginPath()
-  ctx.arc(px, py, 5, 0, Math.PI * 2)
+  ctx.arc(px, py, grid * 0.4, 0, Math.PI * 2)
+
+  ctx.fillStyle = player == 1 ? "black" : "white"
+
   ctx.fill()
+  ctx.stroke()
 
 }
-  
-let hoshi = [4,10,16]
 
-for (let y of hoshi) {
-  for (let x of hoshi) {
-    drawHoshi(x,y)
-  }
-}
-
-  
 canvas.onclick = function(event) {
 
   let rect = canvas.getBoundingClientRect()
@@ -77,35 +75,31 @@ canvas.onclick = function(event) {
 
   if (boardX < 0 || boardX >= size) return
   if (boardY < 0 || boardY >= size) return
-
   if (board[boardY][boardX] != 0) return
 
   board[boardY][boardX] = player
 
   drawStone(boardX, boardY, player)
 
+  socket.emit("move", {
+    x: boardX,
+    y: boardY,
+    player: player
+  })
+
   player = 3 - player
 
 }
 
-function drawStone(x, y, player) {
+socket.on("move", data => {
 
-  let px = (x + 1) * grid
-  let py = (y + 1) * grid
+  if(board[data.y][data.x] != 0) return
 
-  ctx.beginPath()
-  ctx.arc(px, py, grid * 0.4, 0, Math.PI * 2)
+  board[data.y][data.x] = data.player
 
-  if (player == 1) {
-    ctx.fillStyle = "black"
-  } else {
-    ctx.fillStyle = "white"
-  }
+  drawStone(data.x, data.y, data.player)
 
-  ctx.fill()
-  ctx.stroke()
-
-}
+})
 
 </script>
 
