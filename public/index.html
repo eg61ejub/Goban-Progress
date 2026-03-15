@@ -7,7 +7,12 @@
 <body>
 
 <script src="/socket.io/socket.io.js">
+
+  let socket = io()
+
+
     
+  
   <canvas id="board" width="600" height="600"></canvas>
   
   // Brett zeichnen
@@ -118,6 +123,16 @@
     ctx.stroke()
   
   }
+  
+  socket.on("move", data => {
+
+    if(board[data.y][data.x] != 0) return
+  
+    board[data.y][data.x] = data.player
+  
+    drawStone(data.x, data.y, data.player)
+
+  })
   
   io.on("connection", socket => {
   
