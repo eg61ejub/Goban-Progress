@@ -105,6 +105,12 @@ socket.on("move", data => {
 
 })
 
+socket.on("reset", () => {
+
+  location.reload()
+
+})
+
 socket.on("board", serverBoard => {
 
   for (let y = 0; y < size; y++) {
