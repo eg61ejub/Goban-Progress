@@ -1,5 +1,3 @@
-<script>
-
 let socket = io()
 
 let canvas = document.getElementById("board")
@@ -119,9 +117,3 @@ function newGame() {
   socket.emit("reset")
 
 }
-  
-</script>
-  
-
-</body>
-</html>
