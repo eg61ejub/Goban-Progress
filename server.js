@@ -1,3 +1,14 @@
+const express = require("express")
+const http = require("http")
+const { Server } = require("socket.io")
+
+const app = express()
+const server = http.createServer(app)
+const io = new Server(server)
+
+app.use(express.static("."))
+
+
 // --- Array für Spielstand-Speicherung
 const size = 19
 
@@ -29,16 +40,21 @@ io.on("connection", socket => {
 
   })
 
-socket.on("reset", () => {
+  socket.on("reset", () => {
 
-  for (let y = 0; y < size; y++) {
-    for (let x = 0; x < size; x++) {
-      board[y][x] = 0
+    for (let y = 0; y < size; y++) {
+      for (let x = 0; x < size; x++) {
+        board[y][x] = 0
+      }
     }
-  }
 
-  io.emit("reset")
+    io.emit("reset")
+
+  })
 
 })
-  
+
+
+server.listen(3000, () => {
+  console.log("Server running")
 })
