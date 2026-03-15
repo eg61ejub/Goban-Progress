@@ -124,6 +124,12 @@ socket.on("board", serverBoard => {
   }
 
 })
+
+function newGame() {
+
+  socket.emit("reset")
+
+}
   
 </script>
 
