@@ -45,6 +45,17 @@ ctx.arc(300, 300, 15, 0, Math.PI * 2)
 ctx.fill()
 
 // Hoshipunkte
+function drawHoshi(x, y) {
+
+  let px = x * grid
+  let py = y * grid
+
+  ctx.beginPath()
+  ctx.arc(px, py, 5, 0, Math.PI * 2)
+  ctx.fill()
+
+}
+  
 let hoshi = [4,10,16]
 
 for (let y of hoshi) {
