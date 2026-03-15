@@ -7,7 +7,9 @@
 
 <body>
 
-<canvas id="board" width="600" height="600"></canvas>
+<canvas id="board" width="600" height="600">
+  
+</canvas>
 
 <script src="/socket.io/socket.io.js"></script>
 
@@ -101,6 +103,26 @@ socket.on("move", data => {
 
 })
 
+socket.on("board", serverBoard => {
+
+  for (let y = 0; y < size; y++) {
+
+    for (let x = 0; x < size; x++) {
+
+      if(serverBoard[y][x] != 0) {
+
+        board[y][x] = serverBoard[y][x]
+
+        drawStone(x, y, serverBoard[y][x])
+
+      }
+
+    }
+
+  }
+
+})
+  
 </script>
 
 </body>
