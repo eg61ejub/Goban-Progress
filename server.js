@@ -14,17 +14,19 @@ for (let y = 0; y < size; y++) {
 }
 
 
-// --- Server connecten
+// --- Server connectet
 io.on("connection", socket => {
 
   console.log("Player connected")
 
+  socket.emit("board", board)
+
   socket.on("move", data => {
-  
+
     board[data.y][data.x] = data.player
-  
+
     io.emit("move", data)
-  
+
   })
 
 })
