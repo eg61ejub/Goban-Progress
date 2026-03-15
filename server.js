@@ -20,9 +20,11 @@ io.on("connection", socket => {
   console.log("Player connected")
 
   socket.on("move", data => {
-
+  
+    board[data.y][data.x] = data.player
+  
     io.emit("move", data)
-
+  
   })
 
 })
