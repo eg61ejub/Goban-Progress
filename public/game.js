@@ -1,8 +1,14 @@
-const socket = io();
-
+let socket = io()
 let myName = null;
 let myRole = null;
 let gameState = null;
+
+let canvas = document.getElementById("board")
+let ctx = canvas.getContext("2d")
+
+let size = 19
+let grid = canvas.width / (size + 1)
+
 
 // --- Spiel beitreten
 function joinGame() {
@@ -33,6 +39,9 @@ function drawBoard() {
 // --- Zug an Server senden
 canvas.addEventListener("click", (e) => {
 
+  const pos = getBoardPosition(e);
+  if (!pos) return;
+
   if (!myRole || myRole === "spectator") return;
 
   if (myRole !== gameState.currentTurn) {
@@ -40,7 +49,7 @@ canvas.addEventListener("click", (e) => {
     return;
   }
 
-  const { x, y } = getBoardPosition(e);
+  const { x, y } = pos;
 
   socket.emit("makeMove", {
     name: myName,
@@ -61,44 +70,7 @@ function resetGame() {
 
 // -----------------------
 
-
-
-let socket = io()
-
-let canvas = document.getElementById("board")
-let ctx = canvas.getContext("2d")
-
-let size = 19
-let grid = canvas.width / (size + 1)
-
-let player = 1
-let board = []
-
-for (let y = 0; y < size; y++) {
-
-  board[y] = []
-
-  for (let x = 0; x < size; x++) {
-    board[y][x] = 0
-  }
-
-}
-
-for (let i = 1; i <= size; i++) {
-
-  ctx.beginPath()
-  ctx.moveTo(grid, i * grid)
-  ctx.lineTo(size * grid, i * grid)
-  ctx.stroke()
-
-  ctx.beginPath()
-  ctx.moveTo(i * grid, grid)
-  ctx.lineTo(i * grid, size * grid)
-  ctx.stroke()
-
-}
-
-function drawStone(x, y, player) {
+function drawStone(x, y, color) {
 
   let px = (x + 1) * grid
   let py = (y + 1) * grid
@@ -106,14 +78,13 @@ function drawStone(x, y, player) {
   ctx.beginPath()
   ctx.arc(px, py, grid * 0.4, 0, Math.PI * 2)
 
-  ctx.fillStyle = player == 1 ? "black" : "white"
+  ctx.fillStyle = color // <-- direkt verwenden
 
   ctx.fill()
   ctx.stroke()
-
 }
 
-canvas.onclick = function(event) {
+function getBoardPosition(event) {
 
   let rect = canvas.getBoundingClientRect()
 
@@ -123,62 +94,29 @@ canvas.onclick = function(event) {
   let boardX = Math.round(x / grid) - 1
   let boardY = Math.round(y / grid) - 1
 
-  if (boardX < 0 || boardX >= size) return
-  if (boardY < 0 || boardY >= size) return
-  if (board[boardY][boardX] != 0) return
+  if (boardX < 0 || boardX >= size) return null
+  if (boardY < 0 || boardY >= size) return null
 
-  board[boardY][boardX] = player
-
-  drawStone(boardX, boardY, player)
-
-  socket.emit("move", {
-    x: boardX,
-    y: boardY,
-    player: player
-  })
-
-  player = 3 - player
-
+  return { x: boardX, y: boardY }
 }
 
-socket.on("move", data => {
+// --- -----------------------------
+function clearBoard() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  if(board[data.y][data.x] != 0) return
+  // Grid neu zeichnen
+  for (let i = 1; i <= size; i++) {
 
-  board[data.y][data.x] = data.player
+    ctx.beginPath()
+    ctx.moveTo(grid, i * grid)
+    ctx.lineTo(size * grid, i * grid)
+    ctx.stroke()
 
-  drawStone(data.x, data.y, data.player)
-
-})
-
-socket.on("reset", () => {
-
-  location.reload()
-
-})
-
-socket.on("board", serverBoard => {
-
-  for (let y = 0; y < size; y++) {
-
-    for (let x = 0; x < size; x++) {
-
-      if(serverBoard[y][x] != 0) {
-
-        board[y][x] = serverBoard[y][x]
-
-        drawStone(x, y, serverBoard[y][x])
-
-      }
-
-    }
-
+    ctx.beginPath()
+    ctx.moveTo(i * grid, grid)
+    ctx.lineTo(i * grid, size * grid)
+    ctx.stroke()
   }
-
-})
-
-function newGame() {
-
-  socket.emit("reset")
-
 }
+
+
