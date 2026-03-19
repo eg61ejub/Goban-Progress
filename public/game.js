@@ -55,6 +55,9 @@ socket.on("update", (newState) => {
   drawBoard();
 });
 
+function resetGame() {
+  socket.emit("resetGame");
+}
 
 // -----------------------
 
