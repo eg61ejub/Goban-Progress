@@ -8,52 +8,82 @@ const io = new Server(server)
 
 app.use(express.static("public"))
 
-// --- Array für Spielstand-Speicherung
-const size = 19
+// --- GameState 
+let gameState = {
+  players: [],        // ["Arisu", "Bob"]
+  board: [],          // z.B. [{x:1, y:2, color:"black"}]
+  currentTurn: "black"
+};
+// --- END GameState
 
-let board = []
+// --- Alter Spielstand wird geladen 
+const fs = require("fs");
 
-for (let y = 0; y < size; y++) {
-
-  board[y] = []
-
-  for (let x = 0; x < size; x++) {
-    board[y][x] = 0
-  }
-
+if (fs.existsSync("gameState.json")) {
+  const data = fs.readFileSync("gameState.json");
+  gameState = JSON.parse(data);
 }
 
+// --- Speicher-Funktion
+function saveGame() {
+  fs.writeFileSync("gameState.json", JSON.stringify(gameState));
+}
 
-// --- Server connectet
-io.on("connection", socket => {
+// --- Spieler verbinden sich
+io.on("connection", (socket) => {
 
-  console.log("Player connected")
+  // --- Spieler gibt sich Namen
+  socket.on("joinGame", (name) => {
 
-  socket.emit("board", board)
-
-  socket.on("move", data => {
-
-    board[data.y][data.x] = data.player
-
-    io.emit("move", data)
-
-  })
-
-  socket.on("reset", () => {
-
-    for (let y = 0; y < size; y++) {
-      for (let x = 0; x < size; x++) {
-        board[y][x] = 0
-      }
+    if (gameState.players.length < 2 && !gameState.players.includes(name)) {
+      gameState.players.push(name);
     }
 
-    io.emit("reset")
+    let role = "spectator";
 
-  })
+    if (gameState.players[0] === name) role = "black";
+    if (gameState.players[1] === name) role = "white";
 
-})
+    socket.emit("init", {
+      role,
+      gameState
+    });
+  });
 
+  // --- Zug verarbeiten
+  socket.on("makeMove", ({ name, x, y }) => {
+  
+    let color = null;
+  
+    if (gameState.players[0] === name) color = "black";
+    if (gameState.players[1] === name) color = "white";
+  
+    if (color !== gameState.currentTurn) return;
+  
+    gameState.board.push({ x, y, color });
+  
+    gameState.currentTurn = color === "black" ? "white" : "black";
+  
+    saveGame();
+  
+    io.emit("update", gameState);
+  });
+
+  // --- Reset Game
+  socket.on("resetGame", () => {
+
+    gameState = {
+      players: [],
+      board: [],
+      currentTurn: "black"
+    };
+    saveGame();
+    io.emit("update", gameState);
+  });
+
+});
 
 server.listen(3000, () => {
   console.log("Server running")
 })
+
